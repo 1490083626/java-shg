@@ -1,0 +1,543 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wdl.shg.dao.ProductDao">
+	<resultMap id="productMap" type="com.wdl.shg.entity.Product">
+		<id column="product_id" property="productId" />
+		<result column="product_name" property="productName" />
+		<result column="product_desc" property="productDesc" />
+		<result column="img_addr" property="imgAddr" />
+		<result column="normal_price" property="normalPrice" />
+		<result column="promotion_price" property="promotionPrice" />
+		<result column="priority" property="priority" />
+		<result column="create_time" property="createTime" />
+		<result column="last_edit_time" property="lastEditTime" />
+		<result column="enable_status" property="enableStatus" />
+		<result column="page_view" property="pageView" />
+		<result column="message_amount" property="messageAmount" />
+		<result column="linkman" property="linkman" />
+		<result column="contact_wechat" property="contactWechat" />
+		<result column="contact_phone" property="contactPhone" />
+		<association property="productCategory" column="product_category_id"
+			javaType="com.wdl.shg.entity.ProductCategory">
+			<id column="product_category_id" property="productCategoryId" />
+			<result column="product_category_name" property="productCategoryName" />
+
+		</association>
+		<association property="area" column="area_id"
+			javaType="Area">
+			<id column="area_id" property="areaId" />
+			<result column="area_name" property="areaName" />
+
+		</association>
+
+		<association property="owner" column="id"
+			javaType="com.wdl.shg.entity.WechatUserDO">
+			<id column="id" property="id" />
+			<result column="open_id" property="openId" />
+			<result column="nickname" property="nickname" />
+			<result column="avatar_url" property="avatarUrl" />
+		</association>
+		<collection property="productImgList" column="product_id"
+			ofType="com.wdl.shg.entity.ProductImg">
+			<id column="product_img_id" property="productImgId" />
+			<result column="detail_img" property="imgAddr" />
+			<result column="img_desc" property="imgDesc" />
+			<result column="priority" property="priority" />
+			<result column="create_time" property="createTime" />
+			<result column="product_id" property="productId" />
+		</collection>
+	</resultMap>
+<!-- TODO 区域 浏览量 -->	
+
+	<select id="queryProductList" resultMap="productMap">
+		SELECT
+		p.product_id,
+		p.product_name,
+		p.product_desc,
+		p.img_addr,
+		p.normal_price,
+		p.promotion_price,
+		p.priority,
+		p.create_time,
+		p.last_edit_time,
+		p.enable_status,
+
+		p.product_category_id,
+		p.user_id,
+		p.area_id,
+		p.page_view,
+		p.contact_phone,
+		p.contact_wechat,
+		p.linkman,
+		
+		a.area_name,
+		pc.product_category_name,
+		wu.open_id,
+		wu.nickname
+		
+		FROM
+		
+		tb_product p
+		
+		LEFT JOIN
+		tb_area a
+		ON
+		p.area_id =
+		a.area_id
+		
+		LEFT JOIN
+		tb_product_category pc
+		ON
+		pc.product_category_id =
+		p.product_category_id
+		
+		LEFT JOIN
+		tb_wechat_user wu
+		ON
+		wu.open_id =
+		p.open_id
+		<where>
+			<if
+				test="productCondition.owner!=null
+				 and productCondition.owner.openId!=null">
+				and p.open_id = #{productCondition.owner.openId}
+			</if>
+			<if
+				test="productCondition.productCategory!=null
+				 and productCondition.productCategory.productCategoryId!=null">
+				and pc.product_category_id =
+				#{productCondition.productCategory.productCategoryId}
+			</if>
+			<!-- 写like语句的时候 一般都会写成 like '% %' 在mybatis里面写就是应该是 like '%${name} %' 而不是 
+				'%#{name} %' ${name} 是不带单引号的，而#{name} 是带单引号的 -->
+			<if test="productCondition.productName!=null">
+				and p.product_name like '%${productCondition.productName}%'
+			</if>
+			<if test="productCondition.enableStatus!=null">
+				and p.enable_status = #{productCondition.enableStatus}
+			</if>
+			<if
+				test="productCondition.area!=null
+				 and productCondition.area.areaId!=null">
+				and a.area_id =
+				#{productCondition.area.areaId}
+			</if>
+		</where>
+		ORDER BY
+		p.priority DESC
+		LIMIT #{rowIndex},#{pageSize};
+	</select>
+	
+	<select id="queryProductListByHot" resultMap="productMap">
+		SELECT
+		p.product_id,
+		p.product_name,
+		p.product_desc,
+		p.img_addr,
+		p.normal_price,
+		p.promotion_price,
+		p.priority,
+		p.create_time,
+		p.last_edit_time,
+		p.enable_status,
+
+		p.product_category_id,
+		p.user_id,
+		p.area_id,
+		p.page_view,
+		p.contact_phone,
+		p.contact_wechat,
+		p.linkman,
+		a.area_name,
+		pc.product_category_name,
+		wu.nickname
+		
+		FROM
+		
+		tb_product p
+		
+		LEFT JOIN
+		tb_area a
+		ON
+		p.area_id =
+		a.area_id
+		
+		LEFT JOIN
+		tb_product_category pc
+		ON
+		pc.product_category_id =
+		p.product_category_id
+		
+		LEFT JOIN
+		tb_wechat_user wu
+		ON
+		wu.open_id =
+		p.open_id
+		<where>
+			<if
+				test="productCondition.owner!=null
+				 and productCondition.owner.openId!=null">
+				and p.openId = #{productCondition.owner.openId}
+			</if>
+			<if
+				test="productCondition.productCategory!=null
+				 and productCondition.productCategory.productCategoryId!=null">
+				and pc.product_category_id =
+				#{productCondition.productCategory.productCategoryId}
+			</if>
+			<!-- 写like语句的时候 一般都会写成 like '% %' 在mybatis里面写就是应该是 like '%${name} %' 而不是 
+				'%#{name} %' ${name} 是不带单引号的，而#{name} 是带单引号的 -->
+			<if test="productCondition.productName!=null">
+				and p.product_name like '%${productCondition.productName}%'
+			</if>
+			<if test="productCondition.enableStatus!=null">
+				and p.enable_status = #{productCondition.enableStatus}
+			</if>
+			<if
+				test="productCondition.area!=null
+				 and productCondition.area.areaId!=null">
+				and a.area_id =
+				#{productCondition.area.areaId}
+			</if>
+		</where>
+		ORDER BY
+		p.page_view DESC
+		LIMIT #{rowIndex},#{pageSize};
+	</select>
+	
+	
+	<select id="queryProductListByTime" resultMap="productMap">
+		SELECT
+		p.product_id,
+		p.product_name,
+		p.product_desc,
+		p.img_addr,
+		p.normal_price,
+		p.promotion_price,
+		p.priority,
+		p.create_time,
+		p.last_edit_time,
+		p.enable_status,
+
+		p.product_category_id,
+		p.user_id,
+		p.area_id,
+		p.page_view,
+		p.contact_phone,
+		p.contact_wechat,
+		p.linkman,
+		a.area_name,
+		pc.product_category_name,
+		wu.nickname
+		
+		FROM
+		
+		tb_product p
+		
+		LEFT JOIN
+		tb_area a
+		ON
+		p.area_id =
+		a.area_id
+		
+		LEFT JOIN
+		tb_product_category pc
+		ON
+		pc.product_category_id =
+		p.product_category_id
+		
+		LEFT JOIN
+		tb_wechat_user wu
+		ON
+		wu.open_id =
+		p.open_id
+		<where>
+			<if
+				test="productCondition.owner!=null
+				 and productCondition.owner.openId!=null">
+				and p.openId = #{productCondition.owner.openId}
+			</if>
+			<if
+				test="productCondition.productCategory!=null
+				 and productCondition.productCategory.productCategoryId!=null">
+				and pc.product_category_id =
+				#{productCondition.productCategory.productCategoryId}
+			</if>
+			<!-- 写like语句的时候 一般都会写成 like '% %' 在mybatis里面写就是应该是 like '%${name} %' 而不是 
+				'%#{name} %' ${name} 是不带单引号的，而#{name} 是带单引号的 -->
+			<if test="productCondition.productName!=null">
+				and p.product_name like '%${productCondition.productName}%'
+			</if>
+			<if test="productCondition.enableStatus!=null">
+				and p.enable_status = #{productCondition.enableStatus}
+			</if>
+			<if
+				test="productCondition.area!=null
+				 and productCondition.area.areaId!=null">
+				and a.area_id =
+				#{productCondition.area.areaId}
+			</if>
+		</where>
+		ORDER BY
+		p.last_edit_time DESC
+		LIMIT #{rowIndex},#{pageSize};
+	</select>
+	
+	<select id="queryProductListByComment" resultMap="productMap">
+		SELECT
+		p.product_id,
+		p.product_name,
+		p.product_desc,
+		p.img_addr,
+		p.normal_price,
+		p.promotion_price,
+		p.priority,
+		p.create_time,
+		p.last_edit_time,
+		p.enable_status,
+
+		p.product_category_id,
+		p.user_id,
+		p.area_id,
+		p.page_view,
+		p.contact_phone,
+		p.contact_wechat,
+		p.linkman,
+		a.area_name,
+		pc.product_category_name,
+		wu.nickname
+		
+		FROM
+		
+		tb_product p
+		
+		LEFT JOIN
+		tb_area a
+		ON
+		p.area_id =
+		a.area_id
+		
+		LEFT JOIN
+		tb_product_category pc
+		ON
+		pc.product_category_id =
+		p.product_category_id
+		
+		LEFT JOIN
+		tb_wechat_user wu
+		ON
+		wu.open_id =
+		p.open_id
+		<where>
+			<if
+				test="productCondition.owner!=null
+				 and productCondition.owner.openId!=null">
+				and p.openId = #{productCondition.owner.openId}
+			</if>
+			<if
+				test="productCondition.productCategory!=null
+				 and productCondition.productCategory.productCategoryId!=null">
+				and pc.product_category_id =
+				#{productCondition.productCategory.productCategoryId}
+			</if>
+			<!-- 写like语句的时候 一般都会写成 like '% %' 在mybatis里面写就是应该是 like '%${name} %' 而不是 
+				'%#{name} %' ${name} 是不带单引号的，而#{name} 是带单引号的 -->
+			<if test="productCondition.productName!=null">
+				and p.product_name like '%${productCondition.productName}%'
+			</if>
+			<if test="productCondition.enableStatus!=null">
+				and p.enable_status = #{productCondition.enableStatus}
+			</if>
+			<if
+				test="productCondition.area!=null
+				 and productCondition.area.areaId!=null">
+				and a.area_id =
+				#{productCondition.area.areaId}
+			</if>
+		</where>
+		ORDER BY
+		p.message_amount DESC
+		LIMIT #{rowIndex},#{pageSize};
+	</select>
+	
+	<select id="queryProductCount" resultType="int">
+		SELECT count(1) FROM tb_product
+		<where>
+			<if
+				test="productCondition.owner!=null
+				 and productCondition.owner.openId!=null">
+				and open_id = #{productCondition.owner.openId}
+			</if>
+			<if
+				test="productCondition.productCategory!=null
+				 and productCondition.productCategory.productCategoryId!=null">
+				and product_category_id =
+				#{productCondition.productCategory.productCategoryId}
+			</if>
+			<!-- 写like语句的时候 一般都会写成 like '% %' 在mybatis里面写就是应该是 like '%${name} %' 而不是 
+				'%#{name} %' ${name} 是不带单引号的，而#{name} 是带单引号的 -->
+			<if test="productCondition.productName!=null">
+				and product_name like '%${productCondition.productName}%'
+			</if>
+			<if test="productCondition.enableStatus!=null">
+				and enable_status = #{productCondition.enableStatus}
+			</if>
+			<if
+				test="productCondition.area!=null
+				 and productCondition.area.areaId!=null">
+				and area_id =
+				#{productCondition.area.areaId}
+			</if>
+		</where>
+	</select>
+	
+	<insert id="insertProduct" parameterType="com.wdl.shg.entity.Product"
+		useGeneratedKeys="true" keyProperty="productId" keyColumn="product_id">
+		INSERT INTO
+		tb_product(product_name,product_desc,img_addr,
+		normal_price,promotion_price,priority,create_time,
+		last_edit_time,enable_status,product_category_id,
+		open_id,area_id,linkman,contact_wechat,contact_phone)
+		VALUES
+		(#{productName},#{productDesc},#{imgAddr},
+		#{normalPrice},#{promotionPrice},#{priority},#{createTime},
+		#{lastEditTime},#{enableStatus},#{productCategory.productCategoryId},
+		#{owner.openId},#{area.areaId},#{linkman},#{contactWechat},#{contactPhone})
+	</insert>
+	<select id="queryProductById" resultMap="productMap"
+		parameterType="Long">
+		<!-- 具体的sql -->
+		SELECT
+		p.product_id,
+		p.product_name,
+		p.product_desc,
+		p.img_addr,
+		p.normal_price,
+		p.promotion_price,
+		p.priority,
+		p.create_time,
+		p.last_edit_time,
+		p.enable_status,
+		p.page_view,
+		p.message_amount,
+		p.linkman,
+		p.contact_wechat,
+		p.contact_phone,
+
+		p.product_category_id,
+		p.user_id,
+		pm.product_img_id,
+		pm.img_addr AS detail_img,
+		pm.img_desc,
+		pm.priority,
+		pm.create_time,
+		
+		a.area_id,
+		a.area_name,
+		
+		pc.product_category_name,
+		
+		wu.avatar_url,
+		wu.nickname,
+		wu.open_id
+		FROM
+		tb_product p
+		LEFT JOIN
+		tb_area a
+		ON
+		p.area_id =
+		a.area_id
+		LEFT JOIN
+		tb_product_category pc
+		ON
+		p.product_category_id =
+		pc.product_category_id		
+		LEFT JOIN
+		tb_product_img pm
+		ON
+		p.product_id =
+		pm.product_id
+		LEFT JOIN
+		tb_wechat_user wu
+		ON
+		p.open_id =
+		wu.open_id
+		WHERE
+		p.product_id =
+		#{productId}
+		ORDER BY
+		pm.priority DESC
+	</select>
+	<update id="updateProduct" parameterType="com.wdl.shg.entity.Product"
+		keyProperty="product_id" useGeneratedKeys="true">
+		UPDATE tb_product
+		<set>
+			<if test="productName != null">product_name=#{productName},</if>
+			<if test="productDesc != null">product_desc=#{productDesc},</if>
+			<if test="imgAddr != null">img_addr=#{imgAddr},</if>
+			<if test="normalPrice != null">normal_price=#{normalPrice},</if>
+			<if test="promotionPrice != null">promotion_price=#{promotionPrice},</if>
+			<if test="priority != null">priority=#{priority},</if>
+			<if test="lastEditTime != null">last_edit_time=#{lastEditTime},</if>
+			<if test="enableStatus != null">enable_status=#{enableStatus},</if>
+			<if test="pageView != null">page_view=#{pageView},</if>
+			<if test="messageAmount != null">message_amount=#{messageAmount},</if>
+			<if test="linkman != null">linkman=#{linkman},</if>
+			<if test="contactWechat != null">contact_wechat=#{contactWechat},</if>
+			<if test="contactPhone != null">contact_phone=#{contactPhone},</if>
+			
+			<if
+				test="productCategory != null
+				 and productCategory.productCategoryId != null">
+				product_category_id=#{productCategory.productCategoryId},
+			</if>
+			<if
+				test="area != null
+				 and area.areaId != null">
+				area_id=#{area.areaId}
+			</if>			
+		</set>
+		WHERE product_id = #{productId}
+		
+	</update>
+	<update id="updateProductCategoryToNull" parameterType="Long">
+		UPDATE
+		tb_product
+		SET
+		product_category_id = null
+		WHERE product_category_id = 
+		#{productCategoryId}
+	</update>
+	
+	<update id="undateProductPageView" parameterType="Long">
+		UPDATE
+		tb_product
+		SET
+		page_view = page_view + 1
+		WHERE product_id = 
+		#{productId}
+	</update>
+	
+	<update id="undateProductMessageAmount" parameterType="com.wdl.shg.entity.Product">
+		UPDATE
+		tb_product
+		SET
+		message_amount = #{messageAmount}
+		WHERE product_id = 
+		#{productId}
+	</update>
+	
+	<select id="queryProductByCollect" resultType="com.wdl.shg.entity.Product">
+		SELECT 
+		p.* 
+		from 
+		tb_product p , tb_collect c 
+		WHERE p.product_id = c.product_id 
+		AND c.open_id = #{openId} and c.enable_status = 1
+		ORDER BY
+		p.priority DESC
+		LIMIT #{rowIndex},#{pageSize};
+	</select>
+</mapper>

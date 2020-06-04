@@ -1,0 +1,7 @@
+2020-02-29 14:31:23:376 {main} ERROR com.wdl.shg.service.impl.WechatUserServiceImpl -insertWechatUser errororg.springframework.dao.DataIntegrityViolationException: 
+### Error updating database.  Cause: java.sql.SQLIntegrityConstraintViolationException: Column 'token' cannot be null
+### The error may involve com.wdl.shg.dao.WechatUserDao.insertWechatUser-Inline
+### The error occurred while setting parameters
+### SQL: INSERT INTO   tb_wechat_user(token,nickname,avatar_url,   gender,country,province,city,   mobile,open_id,union_id,   created_at,updated_at)   VALUES   (?,?,?,   ?,?,?,?,   ?,?,?,   ?,?)
+### Cause: java.sql.SQLIntegrityConstraintViolationException: Column 'token' cannot be null
+; SQL []; Column 'token' cannot be null; nested exception is java.sql.SQLIntegrityConstraintViolationException: Column 'token' cannot be null

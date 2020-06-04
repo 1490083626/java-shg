@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wdl.shg.dao.CommentDao">
+
+	<!--   	select c.*,u.face_image as face_image,u.nickname from comments c left join users u on c.from_user_id = u.id -->
+<!--   	where c.video_id = #{videoId} order by c.create_time desc -->
+	  <select id="queryCommentList" resultType="com.wdl.shg.dto.CommentsVO" parameterType="Integer">
+		select c.*,u.avatar_url as face_image,u.nickname,tu.nickname as toNickname
+		from tb_comment c 
+		left join tb_wechat_user u on c.from_user_id = u.open_id 
+		left join tb_wechat_user tu on c.to_user_id = tu.open_id
+	   	<where>
+	   		<if
+				test="productId!=null
+				 and productId>0">
+				and c.product_id =
+				#{productId}
+			</if>
+	   	</where>
+	   	order by c.create_time desc
+	   	LIMIT #{rowIndex},#{pageSize};
+	  </select>
+  
+	 <select id="queryUnreadCommentListByOpenId" resultType="com.wdl.shg.dto.CommentsVO" parameterType="String">
+		SELECT
+			c.*,fu.avatar_url as face_image,fu.nickname,p.img_addr
+		FROM
+			tb_comment c
+		LEFT JOIN tb_product p ON c.product_id = p.product_id
+		LEFT JOIN tb_wechat_user fu ON c.from_user_id = fu.open_id
+		LEFT JOIN tb_wechat_user wu ON wu.open_id = p.open_id
+		WHERE
+			c.to_user_id = #{openId}
+		AND c.read = 0
+		AND c.from_user_id != #{openId}
+		ORDER BY c.create_time DESC
+	 </select>
+	 <select id="queryReadCommentListByOpenId" resultType="com.wdl.shg.dto.CommentsVO" parameterType="String">
+		SELECT
+			c.*,fu.avatar_url as face_image,fu.nickname,p.img_addr
+		FROM
+			tb_comment c
+		LEFT JOIN tb_product p ON c.product_id = p.product_id
+		LEFT JOIN tb_wechat_user fu ON c.from_user_id = fu.open_id
+		LEFT JOIN tb_wechat_user wu ON wu.open_id = p.open_id
+		WHERE
+			c.to_user_id = #{openId}
+		AND c.read = 1
+		AND c.from_user_id != #{openId}
+		ORDER BY c.create_time DESC
+	 </select>	 
+	<select id="queryCommentsCount" resultType="int">
+		SELECT count(1) FROM tb_comment c
+	   	<where>
+	   		<if
+				test="productId!=null
+				 and productId>0">
+				and c.product_id =
+				#{productId}
+			</if>
+	   	</where>
+	</select>
+	
+	<insert id="insertComment" parameterType="com.wdl.shg.entity.Comment"
+		useGeneratedKeys="true" keyProperty="commentId" keyColumn="comment_id">
+		INSERT INTO
+		tb_comment(father_comment_id,to_user_id,product_id,
+		from_user_id,comment,create_time)
+		VALUES
+		(#{fatherCommentId},#{toUserId},#{productId},
+		#{fromUserId},#{comment},#{createTime})
+	</insert>
+	
+	<update id="updateCommentToRead" parameterType="Long">
+		UPDATE
+		tb_comment
+		SET
+		`read` = 1
+		WHERE comment_id = 
+		#{commentId}
+	</update>
+	
+	<update id="updateComment" parameterType="com.wdl.shg.entity.Comment"
+		keyProperty="comment_id" useGeneratedKeys="true">
+		UPDATE
+		tb_comment
+		<set>
+			<if test="comment != null">comment=#{comment},</if>
+			<if test="enableStatus != null">enable_status=#{enableStatus}</if>
+		</set>
+		WHERE comment_id = 
+		#{commentId}
+	</update>
+	<delete id="deleteComemnt">
+		<!-- 具体的sql -->
+		DELETE FROM
+		tb_comment
+		WHERE 
+		comment_id = #{commentId}
+	</delete>
+</mapper>

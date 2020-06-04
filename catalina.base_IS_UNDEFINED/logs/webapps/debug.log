@@ -1,0 +1,12 @@
+2020-05-13 23:24:18:932 {main} DEBUG c.w.shg.dao.WechatUserDao.queryWechatInfoByOpenId -==>  Preparing: SELECT * FROM tb_wechat_user WHERE open_id = ? 
+2020-05-13 23:24:19:000 {main} DEBUG c.w.shg.dao.WechatUserDao.queryWechatInfoByOpenId -==> Parameters: openid...(String)
+2020-05-13 23:24:19:077 {main} DEBUG c.w.shg.dao.WechatUserDao.queryWechatInfoByOpenId -<==      Total: 1
+2020-05-13 23:24:51:122 {main} DEBUG c.w.shg.dao.WechatUserDao.queryWechatInfoByOpenId -==>  Preparing: SELECT * FROM tb_wechat_user WHERE open_id = ? 
+2020-05-13 23:24:51:167 {main} DEBUG c.w.shg.dao.WechatUserDao.queryWechatInfoByOpenId -==> Parameters: oODL84rFCFKGTp_X4y3wdCMETg2c(String)
+2020-05-13 23:24:51:253 {main} DEBUG c.w.shg.dao.WechatUserDao.queryWechatInfoByOpenId -<==      Total: 1
+2020-05-13 23:39:57:025 {main} DEBUG c.w.shg.dao.WechatUserDao.queryWechatInfoByOpenId -==>  Preparing: SELECT * FROM tb_wechat_user WHERE open_id = ? 
+2020-05-13 23:39:57:059 {main} DEBUG c.w.shg.dao.WechatUserDao.queryWechatInfoByOpenId -==> Parameters: oODL84rFCFKGTp_X4y3wdCMETg2c(String)
+2020-05-13 23:39:57:175 {main} DEBUG c.w.shg.dao.WechatUserDao.queryWechatInfoByOpenId -<==      Total: 1
+2020-05-13 23:41:48:791 {main} DEBUG c.w.shg.dao.WechatUserDao.queryWechatInfoByOpenId -==>  Preparing: SELECT * FROM tb_wechat_user WHERE open_id = ? 
+2020-05-13 23:41:48:823 {main} DEBUG c.w.shg.dao.WechatUserDao.queryWechatInfoByOpenId -==> Parameters: oODL84rFCFKGTp_X4y3wdCMETg2c(String)
+2020-05-13 23:41:48:929 {main} DEBUG c.w.shg.dao.WechatUserDao.queryWechatInfoByOpenId -<==      Total: 1

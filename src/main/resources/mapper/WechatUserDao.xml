@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wdl.shg.dao.WechatUserDao">
+	<!-- 目的：为dao接口方法提供sql语句配置 -->
+	<select id="queryWechatInfoByOpenId" resultType="com.wdl.shg.entity.WechatUserDO"
+	parameterType="String">
+		<!-- 具体的sql -->
+		SELECT
+		*
+		FROM
+		tb_wechat_user
+
+		WHERE
+		open_id =
+		#{open_id}
+	</select>
+	<select id="queryWechatInfoList" resultType="com.wdl.shg.entity.WechatUserDO">
+		<!-- 具体的sql -->
+		SELECT
+		*
+		FROM
+		tb_wechat_user
+
+		<where>
+			<if
+				test="wechatUserDOCondition.openId!=null">
+				and open_id = #{wechatUserDOCondition.openId}
+			</if>
+			<if
+				test="wechatUserDOCondition.gender!=null">
+				and gender = #{wechatUserDOCondition.gender}
+			</if>	
+			<if
+				test="wechatUserDOCondition.avatarUrl!=null">
+				and avatar_url = #{wechatUserDOCondition.avatarUrl}
+			</if>					
+			<if
+				test="wechatUserDOCondition.mobile!=null">
+				and mobile =
+				#{productCondition.mobile}
+			</if>
+			<!-- 写like语句的时候 一般都会写成 like '% %' 在mybatis里面写就是应该是 like '%${name} %' 而不是 
+				'%#{name} %' ${name} 是不带单引号的，而#{name} 是带单引号的 -->
+			<if test="wechatUserDOCondition.nickname!=null">
+				and nickname like '%${wechatUserDOCondition.nickname}%'
+			</if>
+			<if test="wechatUserDOCondition.enableStatus!=null">
+				and enable_status = #{wechatUserDOCondition.enableStatus}
+			</if>
+		</where>
+		LIMIT #{rowIndex},#{pageSize};
+	</select>
+	<select id="queryWechatUserDOCount" resultType="int">
+		<!-- 具体的sql -->
+		SELECT count(1) FROM
+		tb_wechat_user
+
+		<where>
+			<if
+				test="wechatUserDOCondition.openId!=null">
+				and open_id = #{wechatUserDOCondition.openId}
+			</if>
+			<if
+				test="wechatUserDOCondition.gender!=null">
+				and gender = #{wechatUserDOCondition.gender}
+			</if>	
+			<if
+				test="wechatUserDOCondition.avatarUrl!=null">
+				and avatar_url = #{wechatUserDOCondition.avatarUrl}
+			</if>					
+			<if
+				test="wechatUserDOCondition.mobile!=null">
+				and mobile =
+				#{productCondition.mobile}
+			</if>
+			<!-- 写like语句的时候 一般都会写成 like '% %' 在mybatis里面写就是应该是 like '%${name} %' 而不是 
+				'%#{name} %' ${name} 是不带单引号的，而#{name} 是带单引号的 -->
+			<if test="wechatUserDOCondition.nickname!=null">
+				and nickname like '%${wechatUserDOCondition.nickname}%'
+			</if>
+			<if test="wechatUserDOCondition.enableStatus!=null">
+				and enable_status = #{wechatUserDOCondition.enableStatus}
+			</if>
+		</where>
+	</select>		
+	<insert id="insertWechatUser" parameterType="com.wdl.shg.entity.WechatUserDO"
+		useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+		INSERT INTO
+		tb_wechat_user(token,nickname,avatar_url,
+		gender,country,province,city,
+		mobile,open_id,union_id,
+		created_at,updated_at)
+		VALUES
+		(#{token},#{nickname},#{avatarUrl},
+		#{gender},#{country},#{province},#{city},
+		#{mobile},#{openId},#{unionId},
+		#{createdAt},#{updatedAt})
+	</insert>
+	<update id="updateWechatUser" parameterType="com.wdl.shg.entity.WechatUserDO"
+		keyProperty="id" useGeneratedKeys="true">
+		UPDATE tb_wechat_user
+		<set>
+			<if test="nickname != null">nickname=#{nickname},</if>
+			<if test="avatarUrl != null">avatar_url=#{avatarUrl},</if>
+			<if test="gender != null">gender=#{gender},</if>
+			<if test="mobile != null">mobile=#{mobile},</if>
+			<if test="openId != null">open_id=#{openId},</if>
+			<if test="updatedAt != null">updated_at=#{updatedAt},</if>
+			<if test="enableStatus != null">enable_status=#{enableStatus},</if>
+			<if test="createdAt != null">created_at=#{createdAt},</if>
+			<if test="createdAt != null">created_at=#{createdAt},</if>
+		</set>
+		WHERE id = #{id}
+	</update>
+	<delete id="deleteWechatUser">
+		<!-- 具体的sql -->
+		DELETE FROM
+		tb_wechat_user
+		WHERE 
+		id = #{wechatUserDOId}
+	</delete>	
+</mapper>

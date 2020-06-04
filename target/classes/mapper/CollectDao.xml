@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wdl.shg.dao.CollectDao">
+	<insert id="insertCollect" parameterType="Collect"
+		useGeneratedKeys="true" keyProperty="collectId" keyColumn="collect_id">
+		INSERT INTO
+		tb_collect(open_id,product_id,create_time)
+		VALUES
+		(#{openId},#{productId},#{createTime})
+	</insert>
+	
+	<select id="queryCollectById" resultType="Long">
+		SELECT count(1) FROM tb_comment
+		where product_id = #{productId}
+	</select>	
+	
+	<select id="queryCollectByProductIdAndOpenId" resultType="com.wdl.shg.entity.Collect"
+	parameterType="Collect">
+		<!-- 具体的sql -->
+		SELECT
+		*
+		FROM
+		tb_collect
+
+		WHERE
+		product_id =
+		#{productId}
+		AND
+		open_id = 
+		#{openId}
+	</select>
+	
+	<update id="updateCollect" parameterType="Collect">
+		UPDATE
+		tb_collect
+		SET
+		`enable_status` = #{enableStatus}
+		WHERE collect_id = 
+		#{collectId}
+	</update>
+</mapper>
